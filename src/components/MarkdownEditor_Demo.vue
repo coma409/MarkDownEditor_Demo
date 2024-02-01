@@ -158,8 +158,8 @@ export default {
         }
       });
       ipcRenderer.on('execute-replace', (_event, { findText, replaceText, useRegex, replaceAll }) => {
-        const direction = 'now';
         if (instance) {
+          const direction = 'now';
           const replacementResult = replaceEditorText(
             markdown.value,
             findText,
