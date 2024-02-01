@@ -31,13 +31,12 @@ import 'prismjs/themes/prism-solarizedlight.css';
 import 'katex/dist/katex.min.js';
 import 'katex/dist/katex.min.css';
 import mermaid from 'mermaid';
-import renderMathInElement from 'katex/dist/contrib/auto-render.js';
 import { ref, watch, computed, onMounted, onBeforeUnmount, inject, getCurrentInstance } from 'vue'
 import { Store } from 'vuex'
 import { vuexState } from '../store'
 import { findInTextarea, replaceEditorText } from '../methods/searchandreplace.ts';
 import { debounce } from '../methods/debounce.ts';
-import { markedRenderer } from '../methods/markedrenderer.ts';
+import { markedRenderer, mathRender } from '../methods/markedrenderer.ts';
 import { handleInputScroll, handleOutputScroll, syncScroll } from '../methods/syncscroll.ts';
 
 mermaid.initialize({ startOnLoad: false });
@@ -70,7 +69,7 @@ async function compileMarkdownAndRender(vm: any) {
   let htmlClean;
   let htmlContent;
   
-  if (tab && tab.htmlClean) {
+  if (tab && tab.htmlClean && tab.htmlContent) {
     htmlClean = tab.htmlClean;
     postEffectRender(htmlClean, vm.output);
   } else {
@@ -94,16 +93,6 @@ function postEffectRender(html: string, element: HTMLElement) {
   element.innerHTML = html;
   mathRender(element);
   Prism.highlightAllUnder(element);
-}
-
-function mathRender(element: HTMLElement) {
-  renderMathInElement(element, {
-    delimiters: [
-      { left: "$$", right: "$$", display: true },
-      { left: "$", right: "$", display: false }
-    ],
-    throwOnError: false
-  });
 }
 
 export default {
