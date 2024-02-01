@@ -21,7 +21,7 @@ import TemplateComponent from './components/TemplateComponent.vue';
 
 const ipcRenderer = window.electron.ipcRenderer;
 
-function saveAs (store) {
+function saveAs (store: Store<vuexState>) {
   const activeTab = store.state.tabs.find(tab => tab.path === store.state.activeTab);
   if (activeTab) {
 
@@ -43,14 +43,14 @@ function saveAs (store) {
   }
 }
 
-function saveFile (store) {
+function saveFile (store: Store<vuexState>) {
   const activeTab = store.state.tabs.find(tab => tab.path === store.state.activeTab);
   if (activeTab) {
     ipcRenderer.send('save-file', { filePath: activeTab.filePath, content: activeTab.markdown })
   }
 }
 
-function saveAllFiles (store) {
+function saveAllFiles (store: Store<vuexState>) {
   store.state.tabs
     .filter(tab => tab.filePath)
     .forEach(tab => {
