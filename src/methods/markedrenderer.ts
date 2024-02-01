@@ -2,7 +2,6 @@
 import * as marked from 'marked';
 import mermaid from 'mermaid';
 import renderMathInElement from 'katex/dist/contrib/auto-render.js';
-import Prism from 'prismjs';
 
 export interface IpcRendererMethods {
   invoke: (channel: string, ...args: any[]) => Promise<any>;
