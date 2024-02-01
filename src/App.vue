@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app">
     <nav class="tab-bar">
       <div class="tab" v-for="tab in tabs" :key="tab.id">
         <input v-if="tab.editing" type="text" v-model="tab.title" @blur="finishEditing(tab)" @keyup.enter="finishEditing(tab)">
@@ -130,7 +130,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 .tab-bar {
   display: flex;
   flex-wrap: wrap;

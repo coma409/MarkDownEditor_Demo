@@ -266,6 +266,6 @@ body {
   padding: 0 20px;
   min-height: 96vh;
   max-height: 96vh;
-  overflow: auto;
+  overflow: hidden;
 }
 </style>
