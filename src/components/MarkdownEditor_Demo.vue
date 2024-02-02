@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <textarea class="input" ref="inputBox" placeholder="在此输入 Markdown 文本" v-model="markdown"></textarea>
-    <div class="output" ref="outputBox"></div>
+    <textarea class="input" ref="inputBox"  :style="{ top: editorHeight }" placeholder="在此输入 Markdown 文本" v-model="markdown"></textarea>
+    <div class="output" ref="outputBox" :style="{ top: editorHeight }"></div>
   </div>
 </template>
   
@@ -113,12 +113,18 @@ export default {
     const markdown = ref(tab.value ? tab.value.markdown : '');
     const autoRender = ref(store.state.autorender);
     const instance = getCurrentInstance();
+    const editorHeight = computed(() => {
+      return store.state.overflow ? '50px' : '33px';
+    });
 
     onMounted(() => {
       ipcRenderer.on('toggle-auto-render', (_event, { autoRenderEnabled }) => {
         store.commit('updateTabAutoRender', { autorender: autoRenderEnabled })
         autoRender.value = store.state.autorender;
         console.log("autoRender is " + autoRender.value);
+        if (instance && autoRender.value) {
+          compileMarkdownAndRender(instance.proxy);
+        }
       });
       ipcRenderer.on('perform-find-in-textarea', (_event, { text, direction, useRegex }) => {
         if (instance) {
@@ -185,7 +191,8 @@ export default {
 
     return {
       markdown,
-      autoRender
+      autoRender,
+      editorHeight,
     }
   },
   data() {
@@ -207,7 +214,7 @@ export default {
     }
   },
   beforeDestroy() {
-    document.removeEventListener('keydown', this.handleKeydown);
+//    document.removeEventListener('keydown', this.handleKeydown);
     this.inputEventHandler = () => {
       if (this.autoRender) {
        debouncedCompileRender(this, 100)
@@ -226,7 +233,7 @@ export default {
       this.input = this.$refs.inputBox as HTMLElement;
       this.output = this.$refs.outputBox as HTMLElement;
 
-      document.addEventListener('keydown', this.handleKeydown);
+//      document.addEventListener('keydown', this.handleKeydown);
       this.inputEventHandler = () => {
         if (this.autoRender) {
          debouncedCompileRender(this, 100)
@@ -239,16 +246,16 @@ export default {
       this.input.addEventListener("scroll", this.inputScrollHandler);
       this.output.addEventListener("scroll", this.outputScrollHandler);      
     },
-    handleKeydown(event) {
-      if (event.altKey && event.key === 'r') {
-        this.handleManualRender();
-      }
-    },
-    handleManualRender() {
-      if (!this.autoRender) {
-        compileMarkdownAndRender(this); // 当 autoRender 为 false 时，手动触发渲染
-      }
-    },
+//    handleKeydown(event) {
+//      if (event.altKey && event.key === 'r') {
+//        this.handleManualRender();
+//      }
+//    },
+//    handleManualRender() {
+//      if (!this.autoRender) {
+//        compileMarkdownAndRender(this); // 当 autoRender 为 false 时，手动触发渲染
+//      }
+//    },
   }
 }
 </script>
@@ -280,20 +287,28 @@ body {
   resize: none;
   outline: none;
   background-color: #f6f6f6;
-  border: 1px solid #000000;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-bottom: 1px solid #000000;
   font-size: 14px;
   font-family: "Monaco", courier, monospace;
   padding: 20px;
-  min-height: 96vh;
-  max-height: 96vh;
+  position: absolute;
+  left: 1px;
+  right: 50;
+  bottom: 1px;
   overflow: auto;
 }
 
 .output {
-  border: 1px solid #000000;
+  border-top: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-bottom: 1px solid #000000;
   padding: 0 20px;
-  min-height: 96vh;
-  max-height: 96vh;
+  position: absolute;
+  left: 50;
+  right: 1px;
+  bottom: 1px;
   overflow: hidden;
 }
 </style>

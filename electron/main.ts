@@ -27,7 +27,7 @@ const plantuml_jar = path.join(plantuml_jar_path, 'plantuml.jar')
 
 const windowSizes = {
   'show-replace-dialog': { width: 360, height: 170 },
-  'show-find-dialog': { width: 360, height: 110 },
+  'show-find-dialog': { width: 360, height: 100 },
 };
 
 function createMenu() {
@@ -77,11 +77,12 @@ function createMenu() {
   defaultMenu?.items[editMenuIndex].submenu?.insert(selectAllMenuIndex,
     new MenuItem({
       label: 'Auto Render',
-      type: 'checkbox', // 设置菜单项类型为复选框
-      checked: autoRenderEnabled, // 设置初始勾选状态
+      type: 'checkbox',
+      checked: autoRenderEnabled,
+      accelerator: 'Alt+Enter',
       click: (menuItem) => {
-        autoRenderEnabled = menuItem.checked; // 切换状态
-        win?.webContents.send('toggle-auto-render', { autoRenderEnabled }); // 通过 IPC 发送状态
+        autoRenderEnabled = menuItem.checked;
+        win?.webContents.send('toggle-auto-render', { autoRenderEnabled });
       },
     })
   )

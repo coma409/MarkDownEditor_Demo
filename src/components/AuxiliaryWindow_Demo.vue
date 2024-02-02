@@ -163,10 +163,14 @@ export default defineComponent({
 
 <style scoped>
 .auxiliary-window {
-  padding: 20px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
-  position: relative; /* 确保按钮可以正确定位 */
+  position: absolute; /* 确保按钮可以正确定位 */
+  top: 1px; /* 与父元素顶部对齐 */
+  left: 1px; /* 与父元素左边对齐 */
+  right: 1px; /* 与父元素右边对齐 */
+  bottom: 1px; /* 与父元素底部对齐，这样就覆盖了整个父元素 */
 }
 
 .drag-region {
@@ -193,8 +197,8 @@ export default defineComponent({
 .close-button {
   -webkit-app-region: no-drag;
   position: absolute;
-  top: 0; /* 调整为实际需要的位置 */
-  right: 0; /* 调整为实际需要的位置 */
+  top: 2px; /* 调整为实际需要的位置 */
+  right: 2px; /* 调整为实际需要的位置 */
   z-index: 3; /* 确保按钮在最上层 */
   /* 定义关闭按钮的样式 */
 }

@@ -13,13 +13,24 @@
 </template>
 
 <script lang="ts">
-import { computed, onMounted, onBeforeUnmount, provide, createVNode, render } from 'vue'
+import { computed, onMounted, onBeforeUnmount, provide, createVNode, render, getCurrentInstance } from 'vue'
 import { useStore, Store } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { vuexState, Tab } from './store'
 import TemplateComponent from './components/TemplateComponent.vue';
 
 const ipcRenderer = window.electron.ipcRenderer;
+
+function checkTabsOverflow(store: Store<vuexState>, vm: any) {
+  const tabBar = vm.$el.querySelector('.tab-bar');
+  const tabBarWidth = store.state.nextTabId * 83.125;
+  const hasOverflow = tabBarWidth > tabBar.clientWidth;
+  store.commit('updateTabOverFlow', { overflow: hasOverflow })
+//  console.log('tabBarWidth is ' + tabBarWidth);
+//  console.log('scrollWidth is ' + tabBar.scrollWidth);
+//  console.log('clientWidth is ' + tabBar.clientWidth);
+//  console.log('hasOverflow is ' + hasOverflow);
+}
 
 function saveAs (store: Store<vuexState>) {
   const activeTab = store.state.tabs.find(tab => tab.path === store.state.activeTab);
@@ -67,6 +78,7 @@ export default {
     const route = useRoute()
     const fullPath = computed(() => route.fullPath)
     const tabs = computed(() => store.state.tabs)
+    const instance = getCurrentInstance();
 
     const setActiveTab = (path: string) => {
       store.commit('setActiveTab', path)
@@ -80,9 +92,15 @@ export default {
     }
     const createTab = () => {
       store.dispatch('createTab')
+      if (instance) {
+        checkTabsOverflow(store, instance.proxy)
+      }
     }
     const deleteTab = (id: number) => {
       store.dispatch('deleteTab', id)
+      if (instance) {
+        checkTabsOverflow(store, instance.proxy)
+      }
     }
 
     const handleSaveAs = () => saveAs(store);
@@ -139,13 +157,19 @@ export default {
 
 .tab-bar {
   display: flex;
-  flex-wrap: wrap;
+  overflow-x: auto; /* 允许水平滚动 */
+  white-space: nowrap; /* 防止元素换行 */
   padding: 5px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
   gap: 5px;
 }
 
 .tab {
   display: flex;
   gap: 5px;
+  flex-shrink: 0; /* 防止 tab 在空间不足时被压缩 */
 }
 </style>

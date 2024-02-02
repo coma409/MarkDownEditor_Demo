@@ -19,6 +19,7 @@ export interface vuexState {
   activeTab: string;
   nextTabId: number;
   autorender: boolean;
+  overflow: boolean;
 }
 
 export default createStore({
@@ -29,6 +30,7 @@ export default createStore({
     activeTab: '',
     nextTabId: 2,
     autorender: true,
+    overflow: false,
   },
   mutations: {
     setActiveTab (state: vuexState, path: string) {
@@ -36,6 +38,9 @@ export default createStore({
     },
     updateTabAutoRender (state: vuexState, { autorender }) {
       state.autorender = autorender
+    },
+    updateTabOverFlow (state: vuexState, { overflow }) {
+      state.overflow = overflow
     },
     updateTabMarkdown (state: vuexState, { id, markdown }) {
       const tab = state.tabs.find(tab => tab.id === id)
