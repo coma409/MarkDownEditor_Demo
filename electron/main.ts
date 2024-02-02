@@ -22,8 +22,9 @@ let plantumlServerProcess: childProcess.ChildProcess;
 let autoRenderEnabled = true;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-const plantuml_jar_path = app.isPackaged ? path.join(app.getAppPath(), '../lib') : path.join(process.env.DIST, '../lib');
-const plantuml_jar = path.join(plantuml_jar_path, 'plantuml.jar')
+const lib_path = app.isPackaged ? path.join(app.getAppPath(), '../lib') : path.join(process.env.DIST, '../lib');
+const plantuml_jar = path.join(lib_path, 'plantuml.jar')
+const graphvizDotPath = path.join(lib_path, 'Graphviz', 'bin', 'dot.exe');
 
 const windowSizes = {
   'show-replace-dialog': { width: 360, height: 170 },
@@ -201,9 +202,14 @@ function writeFile(filePath: string, content: string, callback: (err: NodeJS.Err
   fs.writeFile(filePath, content, 'utf8', callback);
 }
 
-function plantUMLServer() {
+function plantUMLServer(plantuml_jar) {
   ipcMain.handle('render-plantuml', async (_event, code) => {
-    plantumlServerProcess = childProcess.spawn('java', ['-jar', plantuml_jar, '-pipe', '-tsvg']);
+    const env = Object.assign({}, process.env, {
+      GRAPHVIZ_DOT: graphvizDotPath
+    });
+
+    plantumlServerProcess = childProcess.spawn('java', ['-jar', plantuml_jar, '-pipe', '-tsvg'], { env });
+
     plantumlServerProcess.stdin?.write(code);
     plantumlServerProcess.stdin?.end();
     let imgData = '';
@@ -213,6 +219,12 @@ function plantUMLServer() {
       });
       plantumlServerProcess.stdout?.on('end', () => {
         resolve(imgData);
+      });
+      plantumlServerProcess.stderr?.on('data', (data) => {
+        console.error(data.toString());
+      });
+      plantumlServerProcess.on('error', (error) => {
+        console.error('Failed to start PlantUML process:', error);
       });
     });
   });
@@ -345,7 +357,7 @@ function showAuxiliaryWindow(eventToSend: string) {
 app.on('ready', () => {
   createWindow()
   createMenu()
-  plantUMLServer()
+  plantUMLServer(plantuml_jar)
   saveFileListener()
   saveFileAsListener()
   editorListener()
