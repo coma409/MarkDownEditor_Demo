@@ -19,6 +19,7 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.D
 let win: BrowserWindow | null
 let auxiliaryWindow: BrowserWindow | null = null;
 let plantumlServerProcess: childProcess.ChildProcess;
+let autoRenderEnabled = true;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 const plantuml_jar_path = app.isPackaged ? path.join(app.getAppPath(), '../lib') : path.join(process.env.DIST, '../lib');
@@ -70,6 +71,18 @@ function createMenu() {
       click: () => {
         openFile()
       }
+    })
+  )
+
+  defaultMenu?.items[editMenuIndex].submenu?.insert(selectAllMenuIndex,
+    new MenuItem({
+      label: 'Auto Render',
+      type: 'checkbox', // 设置菜单项类型为复选框
+      checked: autoRenderEnabled, // 设置初始勾选状态
+      click: (menuItem) => {
+        autoRenderEnabled = menuItem.checked; // 切换状态
+        win?.webContents.send('toggle-auto-render', { autoRenderEnabled }); // 通过 IPC 发送状态
+      },
     })
   )
 

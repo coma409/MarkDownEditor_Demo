@@ -18,22 +18,24 @@ export interface vuexState {
   tabs: Tab[];
   activeTab: string;
   nextTabId: number;
+  autorender: boolean;
 }
 
 export default createStore({
   state: {
     tabs: [
-      { id: 1, title: 'Tab1', path: '/tab1', editing: false, markdown: '', htmlInner: '', htmlOuter: '', filePath: '' }
+      { id: 1, title: 'Tab1', path: '/tab1', editing: false, markdown: '', htmlInner: '', htmlOuter: '', filePath: '', findText: '', replaceText: '', useRegex: false }
     ],
     activeTab: '',
     nextTabId: 2,
-    searchText: '',
-    replaceText: '',
-    useRegex: false
+    autorender: true,
   },
   mutations: {
     setActiveTab (state: vuexState, path: string) {
       state.activeTab = path
+    },
+    updateTabAutoRender (state: vuexState, { autorender }) {
+      state.autorender = autorender
     },
     updateTabMarkdown (state: vuexState, { id, markdown }) {
       const tab = state.tabs.find(tab => tab.id === id)
@@ -76,7 +78,7 @@ export default createStore({
       tab.editing = false
     },
     createTab (state: vuexState) {
-      state.tabs.push({ id: state.nextTabId, title: `Tab${state.nextTabId}`, path: `/tab${state.nextTabId}`, editing: false, markdown: '', htmlClean: '', htmlContent: '', filePath: '' , findText: '', replaceText: '', useRegex: false })
+      state.tabs.push({ id: state.nextTabId, title: `Tab${state.nextTabId}`, path: `/tab${state.nextTabId}`, editing: false, markdown: '', htmlClean: '', htmlContent: '', filePath: '', findText: '', replaceText: '', useRegex: false })
       state.nextTabId++
     },
     createTabFromFile (state: vuexState, { title, filePath, markdown }) {

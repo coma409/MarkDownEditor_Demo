@@ -111,9 +111,15 @@ export default {
     const store = inject('store') as Store<vuexState>;
     const tab = computed(() => store.state.tabs.find(tab => tab.id === props.id));
     const markdown = ref(tab.value ? tab.value.markdown : '');
+    const autoRender = ref(store.state.autorender);
     const instance = getCurrentInstance();
 
     onMounted(() => {
+      ipcRenderer.on('toggle-auto-render', (_event, { autoRenderEnabled }) => {
+        store.commit('updateTabAutoRender', { autorender: autoRenderEnabled })
+        autoRender.value = store.state.autorender;
+        console.log("autoRender is " + autoRender.value);
+      });
       ipcRenderer.on('perform-find-in-textarea', (_event, { text, direction, useRegex }) => {
         if (instance) {
           const result = findInTextarea(text, direction, useRegex, instance.proxy);
@@ -164,6 +170,7 @@ export default {
     });
 
     onBeforeUnmount(() => {
+      ipcRenderer.removeAllListeners('toggle-auto-render');
       ipcRenderer.removeAllListeners('perform-find-in-textarea');
       ipcRenderer.removeAllListeners('execute-find-replace-text');
       ipcRenderer.removeAllListeners('execute-replace');
@@ -171,13 +178,14 @@ export default {
 
     watch(markdown, (newMarkdown) => {
       store.commit('updateTabMarkdown', { id: props.id, markdown: newMarkdown })
-      if (instance) {
+      if (instance && autoRender.value) {
         compileMarkdownAndRender(instance.proxy);
       }
     })
 
     return {
       markdown,
+      autoRender
     }
   },
   data() {
@@ -199,7 +207,12 @@ export default {
     }
   },
   beforeDestroy() {
-    this.inputEventHandler = () => debouncedCompileRender(this, 100);
+    document.removeEventListener('keydown', this.handleKeydown);
+    this.inputEventHandler = () => {
+      if (this.autoRender) {
+       debouncedCompileRender(this, 100)
+      }
+    };
     this.inputScrollHandler = () => handleInputScroll(this);
     this.outputScrollHandler = () => handleOutputScroll(this);
     this.input.removeEventListener("input", this.inputEventHandler);
@@ -213,13 +226,28 @@ export default {
       this.input = this.$refs.inputBox as HTMLElement;
       this.output = this.$refs.outputBox as HTMLElement;
 
-      this.inputEventHandler = () => debouncedCompileRender(this, 100);
+      document.addEventListener('keydown', this.handleKeydown);
+      this.inputEventHandler = () => {
+        if (this.autoRender) {
+         debouncedCompileRender(this, 100)
+        }
+      };
       this.inputScrollHandler = () => handleInputScroll(this);
       this.outputScrollHandler = () => handleOutputScroll(this);
 
       this.input.addEventListener("input", this.inputEventHandler);
       this.input.addEventListener("scroll", this.inputScrollHandler);
       this.output.addEventListener("scroll", this.outputScrollHandler);      
+    },
+    handleKeydown(event) {
+      if (event.altKey && event.key === 'r') {
+        this.handleManualRender();
+      }
+    },
+    handleManualRender() {
+      if (!this.autoRender) {
+        compileMarkdownAndRender(this); // 当 autoRender 为 false 时，手动触发渲染
+      }
     },
   }
 }
