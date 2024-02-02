@@ -1,6 +1,11 @@
-# Vue 3 + TypeScript + Vite + Electron
+# A Simple MarkDownEditor Demo
 
-This template help get me practice developing with Vue 3 TypeScript Vite and Electron. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Just a simple editor for write markdown text file and provide HTML preview file export.
+
+## Development Environment : Vue 3 + TypeScript + Vite + Electron
+
+This template help get me practice developing with Vue 3 TypeScript Vite and Electron.
+The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
 ## Recommended IDE Setup
 
