@@ -140,7 +140,7 @@ export default {
 .tab-bar {
   display: flex;
   flex-wrap: wrap;
-  padding: 4px;
+  padding: 5px;
   gap: 5px;
 }
 
