@@ -27,7 +27,6 @@ const plantuml_jar = path.join(plantuml_jar_path, 'plantuml.jar')
 const windowSizes = {
   'show-replace-dialog': { width: 360, height: 170 },
   'show-find-dialog': { width: 360, height: 110 },
-  // 添加更多事件和尺寸的映射
 };
 
 function createMenu() {
@@ -292,7 +291,7 @@ function showAuxiliaryWindow(eventToSend: string) {
   }
 
   if (!win) {
-    console.error('主窗口未初始化，无法创建辅助窗口。');
+    console.error('The main window is not initialized and cannot create an auxiliary window.');
     return;
   }
 
@@ -301,10 +300,10 @@ function showAuxiliaryWindow(eventToSend: string) {
   auxiliaryWindow = new BrowserWindow({
     width,
     height,
-    frame: false, // 移除窗口边框和标题栏
-    parent: win, // 设置主窗口为父窗口
-    modal: true, // 可以设置为模态窗口，如果需要的话
-    autoHideMenuBar: true, // 这将隐藏菜单栏
+    frame: false,
+    parent: win,
+    modal: true,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
