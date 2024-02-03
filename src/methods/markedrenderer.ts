@@ -161,7 +161,7 @@ export async function markedRenderer(markdown: string, ipcMethods: IpcRendererMe
     async: true,
     async walkTokens(token) {
       if (token.type === 'plantUML') {
-        const imgData = await ipcMethods.invoke('render-plantuml', token.code);
+        const imgData = await ipcMethods.invoke('render-plantuml', { code: token.code });
         token.html = `<pre class="plantuml">${imgData}</pre>`;
       }
     }

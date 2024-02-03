@@ -22,7 +22,9 @@ let plantumlServerProcess: childProcess.ChildProcess;
 let autoRenderEnabled = true;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-const lib_path = app.isPackaged ? path.join(app.getAppPath(), '../lib') : path.join(process.env.DIST, '../lib');
+const isPackaged = app.isPackaged;
+const lib_path = isPackaged ? path.join(app.getAppPath(), '..', 'lib') : path.join(process.env.DIST, '..', 'lib');
+//const lib_path = app.isPackaged ? path.join(__dirname, 'lib') : path.join(process.env.DIST, '../lib');
 const plantuml_jar = path.join(lib_path, 'plantuml.jar')
 const graphvizDotPath = path.join(lib_path, 'Graphviz', 'dot.exe');
 
@@ -84,6 +86,7 @@ function createMenu() {
       click: (menuItem) => {
         autoRenderEnabled = menuItem.checked;
         win?.webContents.send('toggle-auto-render', { autoRenderEnabled });
+//        win?.webContents.send('print-path', { lib_path, plantuml_jar, graphvizDotPath });
       },
     })
   )
@@ -202,8 +205,8 @@ function writeFile(filePath: string, content: string, callback: (err: NodeJS.Err
   fs.writeFile(filePath, content, 'utf8', callback);
 }
 
-function plantUMLServer(plantuml_jar) {
-  ipcMain.handle('render-plantuml', async (_event, code) => {
+function plantUMLServer() {
+  ipcMain.handle('render-plantuml', async (_event, { code }) => {
     const env = Object.assign({}, process.env, {
       GRAPHVIZ_DOT: graphvizDotPath
     });
@@ -357,7 +360,7 @@ function showAuxiliaryWindow(eventToSend: string) {
 app.on('ready', () => {
   createWindow()
   createMenu()
-  plantUMLServer(plantuml_jar)
+  plantUMLServer()
   saveFileListener()
   saveFileAsListener()
   editorListener()

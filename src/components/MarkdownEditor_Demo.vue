@@ -118,6 +118,11 @@ export default {
     });
 
     onMounted(() => {
+//      ipcRenderer.on('print-path', (_event, { lib_path, plantuml_jar, graphvizDotPath }) => {
+//        console.log('lib_path: ', lib_path);
+//        console.log('plantuml_jar: ', plantuml_jar);
+//        console.log('graphvizDotPath: ', graphvizDotPath);
+//      });
       ipcRenderer.on('toggle-auto-render', (_event, { autoRenderEnabled }) => {
         store.commit('updateTabAutoRender', { autorender: autoRenderEnabled })
         autoRender.value = store.state.autorender;
@@ -176,6 +181,7 @@ export default {
     });
 
     onBeforeUnmount(() => {
+//      ipcRenderer.removeAllListeners('print-path');
       ipcRenderer.removeAllListeners('toggle-auto-render');
       ipcRenderer.removeAllListeners('perform-find-in-textarea');
       ipcRenderer.removeAllListeners('execute-find-replace-text');
