@@ -24,7 +24,7 @@ let autoRenderEnabled = true;
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 const lib_path = app.isPackaged ? path.join(app.getAppPath(), '../lib') : path.join(process.env.DIST, '../lib');
 const plantuml_jar = path.join(lib_path, 'plantuml.jar')
-const graphvizDotPath = path.join(lib_path, 'Graphviz', 'bin', 'dot.exe');
+const graphvizDotPath = path.join(lib_path, 'Graphviz', 'dot.exe');
 
 const windowSizes = {
   'show-replace-dialog': { width: 360, height: 170 },
